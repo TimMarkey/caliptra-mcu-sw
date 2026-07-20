@@ -5,14 +5,15 @@
 //! Transport-neutral signed attestation evidence generation.
 
 pub mod ocp_eat;
+#[cfg(feature = "pcr-quote")]
 pub mod pcr_quote;
 
 use caliptra_mcu_measurement_api::{
     EvidenceBuilder, ATTESTATION_P384_DIGEST_SIZE, ATTESTATION_P384_SIGNATURE_SIZE,
 };
-use mcu_caliptra_api_lite::signed_eat::{cose_sign1_len, SignedEat};
 use mcu_caliptra_api_lite::{ApiAlloc, DPE_LABEL_LEN};
 use mcu_error::McuResult;
+use ocp_eat::{cose_sign1_len, ClaimsPayloadLayout, SignedEat};
 
 pub const KID_LEN: usize = 48;
 pub const SIGNED_OCP_EAT_MAX_SIZE: usize = cose_sign1_len(ocp_eat::EAT_PAYLOAD_MAX_SIZE);
@@ -31,7 +32,7 @@ struct SignedOcpEatBuilder<'a> {
     signed_eat: SignedEat,
     nonce: &'a [u8],
     eat_buffer: &'a mut [u8],
-    claims_layout: Option<ocp_eat::ClaimsPayloadLayout>,
+    claims_layout: Option<ClaimsPayloadLayout>,
 }
 
 impl<'a> SignedOcpEatBuilder<'a> {
